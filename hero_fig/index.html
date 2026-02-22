@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PerturbDiff Hero</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+    overflow-x: hidden;
+    background: #f8fafb;
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    transition: opacity 0.8s ease;
+  }
+
+  body.fade-out {
+    opacity: 0;
+  }
+
+  /* 主内容层：严格 100vh 占满视口，无左侧留白 */
+  .hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0 5vmin 0 0;
+    background: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    z-index: 1;
+    animation: slideIn 5.2s ease-out forwards;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(120px);
+    }
+    to {
+      transform: translateX(-50px);
+    }
+  }
+
+  .left {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  /*
+   * 仅放大左侧主图 illustrated.jpg；贴顶 100vh。
+   * 若图片文件顶部自带留白，把 left top 改为 left 12% 可裁掉文件顶部约 12% 的空白。
+   */
+  .left > img {
+    display: block;
+    height: 100vh;
+    width: auto;
+    object-fit: contain;
+    object-position: left 12%;
+  }
+ 
+
+.left::after {
+  content: "";
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(80,120,200,0.2), transparent 70%);
+  filter: blur(20px);
+  z-index: -1;
+}
+
+  /* title/subtitle/tagline 叠在图片上，从左约 50% 处、略偏上 */
+  .right {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    transform: translateY(-50%);
+    max-width: 54%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 0;
+    text-align: left;
+  }
+
+  .right .title {
+    font-size: clamp(44px, 6.2vw, 96px);
+    font-weight: 800;
+    color: #1e3d63;
+    margin-bottom: 1.2vh;
+    letter-spacing: -0.8px;
+    text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+  }
+
+  .right .subtitle {
+    font-size: clamp(22px, 2.8vw, 38px);
+    line-height: 1.55;
+    color: #2b3f54;
+    margin-bottom: 10vh;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+  }
+
+  .right .tagline {
+    font-size: clamp(18px, 2.2vw, 32px);
+    font-weight: 600;
+    color: #6a9cc5;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+  }
+  .right .divider {
+    width: 700px;
+    height: 3px;
+    background: #7fb4c6;
+    margin-bottom: 30px;
+    border-radius: 2px;
+  }
+
+  /* ===== Built by 分割线样式 ===== */
+
+  .org-divider {
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #666;
+    font-size: 15px;
+  }
+
+  .org-divider::before,
+  .org-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #d0d6df;
+  }
+
+  /* ===== Logo 区域 ===== */
+
+  .logos {
+    margin-top: 0.5vh;
+    display: flex;
+    gap: clamp(16px, 2vw, 28px);
+    align-items: center;
+  }
+
+  .logo-box {
+    background: white;
+    padding: 1.4vmin 2.6vmin;
+    border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: clamp(108px, 14vh, 170px);
+    min-width: clamp(102px, 13vw, 152px);
+    overflow: hidden;
+  }
+
+  .logo-box img {
+    object-fit: contain;
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+  }
+
+  /* 悬浮提示：叠在 illustrated.jpg 图像底部中央 */
+  .click-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 55%;
+    transform: translateX(-50%);
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    font-size: 27px;
+    color: #444;
+    pointer-events: none;
+    animation: pulse 2s ease-in-out infinite;
+    white-space: nowrap;
+    z-index: 20;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+</style>
+</head>
+
+<body onclick="enterSite()">
+
+<div class="hero">
+
+  <div class="left">
+    <img src="illustrated.jpg" alt="PerturbDiff Illustration" />
+    <div class="click-hint">Please click to continue</div>
+    <div class="right">
+    <div class="title">PerturbDiff</div>
+
+    <div class="subtitle">
+      Functional Diffusion for Single-Cell Perturbation Modeling
+    </div>
+
+    <div class="tagline">
+      Building Virtual Cells for Systems Biology
+    </div>
+    <div class="divider"></div>
+
+    
+
+    <!-- Logo 行 -->
+    <div class="logos">
+      <div class="logo-box">
+        <img src="mila.png" alt="Mila" />
+      </div>
+      <div class="logo-box">
+        <img src="udem.png" alt="Université de Montréal" />
+      </div>
+      <div class="logo-box">
+        <img src="ott.png" alt="University of Ottawa" />
+      </div>
+      <div class="logo-box">
+        <img src="hec.png" alt="HEC Montréal" />
+      </div>
+    </div>
+
+  </div>
+
+  </div>
+
+</div>
+
+<script>
+  function enterSite() {
+    document.body.classList.add("fade-out");
+    setTimeout(function () {
+      window.location.href = "../project_page_perturbdiff/index.html";
+    }, 800);
+  }
+</script>
+
+</body>
+</html>
